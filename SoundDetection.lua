@@ -1,5 +1,4 @@
 local main = script.parent
-local Detection=game.Workspace.Detection
 local player = script.Parent
 local body = player:WaitForChild("Humanoid")
 local character = game.Players.LocalPlayer

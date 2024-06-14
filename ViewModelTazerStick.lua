@@ -8,7 +8,7 @@ local runService = game:GetService("RunService")
 local inputService = game:GetService("UserInputService")
 local equipped = false
 local viewModel
-local modelName = "viewModelFlashLight"
+local modelName = "viewModelTazerStick"
 
 tool.Equipped:Connect(function()
 	equipped = true
@@ -17,15 +17,13 @@ end)
 tool.Unequipped:Connect(function()
 	equipped = false
 	viewModel = camera:WaitForChild(modelName)
-	destroyLight()
 	viewModel:Destroy()
 end)
 local camSway = CFrame.new()
 
-function flashLightFunctionality(deltaTime)
+function tazerStickFunctionality(deltaTime)
 	if humanoid.Health <= 0 then
 		if not (camera:FindFirstChild(modelName)==nil) then
-			destroyLight()
 			camera:WaitForChild(modelName):Destroy()
 		end
 	end
@@ -46,11 +44,4 @@ function flashLightFunctionality(deltaTime)
 	end
 end
 
-function destroyLight()
-	local meshPart = camera:WaitForChild(modelName):WaitForChild("Flashlight"):WaitForChild("MeshPart")
-	if meshPart:FindFirstChild("SurfaceLight") then
-		meshPart:WaitForChild("SurfaceLight").Parent = nil
-	end
-end
-
-runService.RenderStepped:Connect(flashLightFunctionality)
+runService.RenderStepped:Connect(tazerStickFunctionality)

@@ -1,6 +1,9 @@
 local InputService = game:GetService("UserInputService")
+local CollectionService = game:GetService("CollectionService")
 local tazerStick = script.Parent
 local tazerSound = tazerStick:WaitForChild("Sound")
+local camera = workspace.Camera
+local tazerMeshPart = camera:WaitForChild("viewModelTazerStick"):WaitForChild("TazerStick"):WaitForChild("MeshPart")
 local active = false
 local equipped = false
 
@@ -18,6 +21,12 @@ InputService.InputBegan:Connect(function(input)
 		active = not active
 		if active then tazerSound:Play(); return end
 		tazerSound:Stop()
+	end
+end)
+
+tazerMeshPart.Touched:Connect(function(part)
+	if CollectionService:HasTag(part,"Enemy") and part.Name ~= "HumanoidRootPart" or CollectionService:HasTag(part,"Enemy") and part.Name ~= "Humanoid" then
+		part:Destroy()
 	end
 end)
 
