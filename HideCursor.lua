@@ -1,2 +1,2 @@
---local InputService = game:GetService("UserInputService")
---InputService.MouseIconEnabled = false
+local InputService = game:GetService("UserInputService")
+InputService.MouseIconEnabled = false

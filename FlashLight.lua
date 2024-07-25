@@ -1,46 +1,41 @@
-local flashLight = script.Parent
-local camera = workspace:WaitForChild("Camera")
+local camera = workspace.CurrentCamera
+local player = game.Players.LocalPlayer
+local replicatedStorage = game:GetService("ReplicatedStorage").FlashLight
+local runService = game:GetService("RunService")
+local remoteEventInput = replicatedStorage.FlashLightInput
+local remoteEventCFrame = replicatedStorage.FlashLightCFrame
+local remoteEventEquipped = replicatedStorage.FlashLightEquipped
 local InputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local handle = flashLight:WaitForChild("Handle")
-local lightObject = handle:WaitForChild("SurfaceLight")
-local clickSound = flashLight:WaitForChild("Sound")
-local ultraViolet = Color3.new(0.282353, 0, 0.65098)
-local yellow = Color3.new(1, 0.941176, 0.286275)
-local playing = false
-local active = false
-local ultraVioletActive = false
+local clickSound = replicatedStorage.flashLightSound
 local equipped = false
 
-lightObject.Parent = nil
-flashLight.Equipped:Connect(function()
-	equipped = true
-	lightObject.Brightness = 5
-end)
-flashLight.Unequipped:Connect(function()
+script.Parent.Unequipped:Connect(function()
+	remoteEventEquipped:FireServer()
 	equipped = false
-	active = false
-	lightObject.Brightness = 0
+end)
+
+script.Parent.Equipped:Connect(function()
+	remoteEventEquipped:FireServer()
+	equipped = true
+end)
+
+runService.Heartbeat:Connect(function()
+	local character = player.Character or player.CharacterAdded:Wait()
+	if character.Humanoid.Health > 0 and equipped then
+		remoteEventCFrame:FireServer(camera.viewModelFlashLight.Flashlight.MeshPart.CFrame)
+	end
 end)
 
 InputService.InputBegan:Connect(function(input)
 	if equipped then
-		if input.UserInputType == Enum.UserInputType.MouseButton1 and not playing then
-			active = not active
-			playing = true
-			clickSound:Play()
-			wait(clickSound.TimeLength)
-			clickSound:Stop()
-			playing = false
-			lightObject.Parent = active and camera:WaitForChild("viewModelFlashLight"):WaitForChild("Flashlight"):WaitForChild("MeshPart") or nil
-		elseif input.KeyCode == Enum.KeyCode.E and active and not playing then
-			playing = true
-			clickSound:Play()
-			wait(clickSound.TimeLength)
-			clickSound:Stop()
-			playing = false
-			ultraVioletActive = not ultraVioletActive
-			lightObject.Color = ultraVioletActive and ultraViolet or yellow
-		end
+		remoteEventInput:FireServer({input.KeyCode,input.UserInputType})
+	end
+end)
+
+remoteEventInput.OnClientEvent:Connect(function(play)
+	if play then
+		clickSound:Play()
+	else
+		clickSound:Stop()
 	end
 end)
